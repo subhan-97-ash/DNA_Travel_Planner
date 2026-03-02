@@ -58,7 +58,7 @@ indoor_docs = [
         page_content=row["activity"],
         metadata={"city": row["city"].lower()}
     )
-    for _, row in df.iterrows()
+    for _, row in df.iterrows()]
 
 embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", google_api_key=GOOGLE_API_KEY)
 docs = indoor_docs
