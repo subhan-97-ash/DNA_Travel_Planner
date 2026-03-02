@@ -5,7 +5,7 @@ Built with **LangGraph, RAG, Streamlit, and external APIs**, this app helps user
 
 ---
 
-## 🔄 Workflow
+### Workflow
 
 * User enters source, destination, start date, and trip duration
 * AI generates a multi-day itinerary
@@ -15,7 +15,7 @@ Built with **LangGraph, RAG, Streamlit, and external APIs**, this app helps user
 
 ---
 
-## ☁️ Deployment
+### Deployment
 
 This app is deployed using **Streamlit Cloud**.
 
