@@ -10,53 +10,113 @@ import streamlit as st
 from datetime import date
 from travel_agent import app
 
-st.set_page_config(page_title="AI Travel Concierge", page_icon="🌍")
+st.set_page_config(page_title="AI Travel Planner", page_icon="🌍", layout="wide")
 
-st.title("🌍 Dynamic Travel Concierge")
-st.write("Plan your trip with weather-aware AI")
 
-# --- User Inputs ---
-source = st.text_input("Source City", "Hyderabad")
-destination = st.text_input("Destination", "London")
-start_date = st.date_input("Start Date", date.today())
-days = st.slider("Number of Days", 1, 14, 5)
+# ---------- Helper: Weather Icons ----------
+def get_weather_icon(text):
+    text = text.lower()
+    if "rain" in text:
+        return "🌧️"
+    if "cloud" in text:
+        return "☁️"
+    if "clear" in text or "sun" in text:
+        return "☀️"
+    if "snow" in text:
+        return "❄️"
+    if "storm" in text:
+        return "⛈️"
+    return "🌤️"
 
-# --- Generate Button ---
-if st.button("Generate Itinerary"):
-    if not source or not destination:
-        st.warning("Please enter both source and destination.")
-    else:
-        with st.spinner("Planning your trip..."):
 
-            try:
-                result = app.invoke({
-                    "source": source,
-                    "destination": destination,
-                    "start_date": start_date,
-                    "days": days
-                })
+# ---------- Centered Header Title ----------
+st.markdown(
+    """
+    <h1 style='text-align:center;'>🌍AI Travel Concierge</h1>
+    <p style='text-align:center; color:gray;'>
+    Tell us where to go — we’ll handle the itinerary with real-time weather insights and curated travel recommendations    </p>
+    """,
+    unsafe_allow_html=True
+)
 
-                st.success("Trip Planned!")
+st.divider()
 
-                # 🗺️ Itinerary
-                st.subheader("🗺️ Itinerary")
+# ---------- Inputs ----------
+col1, col2 = st.columns(2)
 
-                # Render formatted itinerary
-                for line in result["itinerary"]:
-                    if line.lower().startswith("day"):
-                        st.markdown(f"### {line}")
-                    elif line.strip().startswith("-"):
-                        st.markdown(line)
-                    else:
-                        st.write(line)
+with col1:
+    source = st.text_input("Source City", "Hyderabad")
 
-                # ✈️ Flights
+with col2:
+    destination = st.text_input("Destination", "Goa")
+
+col3, col4 = st.columns(2)
+
+with col3:
+    start_date = st.date_input("Start Date", date.today())
+
+with col4:
+    days = st.slider("Trip Duration (days)", 1, 14, 3)
+
+st.divider()
+
+# ---------- Route Display ----------
+if source and destination:
+    st.markdown(
+    f"""
+    <div style="text-align:center; font-size:22px; font-weight:600;">
+        {source.title()} ✈️ {destination.title()}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.divider()
+
+# ---------- Generate Button ----------
+if st.button("✨ Generate Itinerary"):
+    with st.spinner("Planning your perfect trip for memorable experiences..."):
+
+        try:
+            result = app.invoke({
+                "source": source,
+                "destination": destination,
+                "start_date": start_date,
+                "days": days
+            })
+
+            st.success("Trip Planned Successfully!")
+
+            # ---------- Itinerary ----------
+            st.subheader("🗺️ Your Itinerary")
+
+            for item in result["itinerary"]:
+                icon = get_weather_icon(item)
+                st.markdown(
+        f"""
+        <div style="
+            padding:12px;
+            border-radius:8px;
+            margin-bottom:8px;
+            background-color:#f5f7fb;">
+            {icon} {item}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+            st.divider()
+
+            # ---------- Flights & Hotels ----------
+            colA, colB = st.columns(2)
+
+            with colA:
                 st.subheader("✈️ Recommended Flights")
-                st.info(result.get("flights", "No flight data"))
+                st.info(result.get("flights", "No flight data available"))
 
-                # 🏨 Hotels
+            with colB:
                 st.subheader("🏨 Recommended Hotels")
-                st.success(result.get("hotels", "No hotel data"))
+                st.success(result.get("hotels", "No hotel data available"))
 
-            except Exception as e:
-                st.error(f"Error planning trip: {e}")
+        except Exception as e:
+            st.error(f"Error planning trip: {e}")
