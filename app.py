@@ -10,7 +10,7 @@ import streamlit as st
 from datetime import date
 from travel_agent import app
 
-st.set_page_config(page_title="AI Travel Planner", page_icon="🌍", layout="wide")
+st.set_page_config(page_title="AI Travel Planner", page_icon="✈️", layout="wide")
 
 
 # ---------- Helper: Weather Icons ----------
